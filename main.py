@@ -20,7 +20,7 @@ driver = webdriver = webdriver.Chrome(options=options)
 stockList = []
 indexChart = []
 news = []
-symbol_list = ["005930", "373220", "035720", "000660"]  #(삼성, 에너지솔루션, 카카오, 하이닉스)
+symbol_list = ["005930", "066570", "005380", "000660"]  #(삼성전자, LG전자, 현대차, SK하이닉스)
 
 def getPrice(stock):
     driver.get("https://m.stock.naver.com/search")
@@ -30,10 +30,10 @@ def getPrice(stock):
     sb.send_keys(stock)
     sb.send_keys(Keys.ENTER)
     time.sleep(2)
-    driver.find_element(By.XPATH, '//*[@id="content"]/div[2]/ul/li[1]/div[1]').click()
-    time.sleep(5)
-    code = driver.find_element(By.XPATH, '//*[@id="content"]/div[3]/div[1]/div[1]/span[1]').text
-    price = driver.find_element(By.XPATH, '//*[@id="content"]/div[3]/div[1]/div[1]/strong').text.replace("원", '').replace("USD", "")
+    driver.find_element(By.XPATH, '//*[@id="content"]/div[2]/ul/li[1]/button').click()
+    time.sleep(5.5)
+    code = driver.find_element(By.XPATH, '//div[@id="content"]/div[@id="stockContentWrapper"]/div[3]/div[1]/div[1]/span[1]').text
+    price = driver.find_element(By.XPATH, '//div[@id="content"]/div[@id="stockContentWrapper"]/div[3]/div[1]/div[1]/strong').text.replace("원", '').replace("USD", "")
     chart = driver.find_element(By.CLASS_NAME, 'GraphMain_stockChart__gQeN3').get_attribute('src')
     table = driver.find_element(By.CLASS_NAME, 'StockInfo_list__V96U6')
     volume = table.find_element(By.CSS_SELECTOR, 'ul > li:nth-child(5) > div > span').text
@@ -186,7 +186,7 @@ def get_stock_balance():
     stock_list = res.json()['output1']
     evaluation = res.json()['output2']
     stock_dict = {}
-    send_message(f"====주식 보유잔고====")
+    send_message(f"====보유잔고====")
     for stock in stock_list:
         if int(stock['hldg_qty']) > 0:
             stock_dict[stock['pdno']] = stock['hldg_qty']
@@ -309,7 +309,7 @@ def tradeMain():
         buy_amount = total_cash * buy_percent
         soldout = False
 
-        send_message("===국내 주식 자동매매 프로그램을 시작합니다===")
+        send_message("===자동매매 프로그램을 시작합니다===")
         while True:
             t_now = datetime.datetime.now()
             t_9 = t_now.replace(hour=9, minute=0, second=0, microsecond=0)
@@ -468,8 +468,8 @@ if __name__ == '__main__':
     ACCESS_TOKEN = get_access_token()
     print("Getting Stock Information...")
     stockList.append(getPrice("삼성전자"))
-    stockList.append(getPrice("LG에너지솔루션"))
-    stockList.append(getPrice("카카오"))
+    stockList.append(getPrice("LG전자"))
+    stockList.append(getPrice("현대차"))
     stockList.append(getPrice("SK하이닉스"))
     indexChart.append(get_chart_index("KOSPI"))
     indexChart.append(get_chart_index("KOSDAQ"))
@@ -477,4 +477,4 @@ if __name__ == '__main__':
     indexChart.append(get_chart_index("KPI100"))
     news.append(get_naver_news())
     print("Done")
-    socketio.run(app, debug=False, allow_unsafe_werkzeug=True, port=5001, log_output=True)
+    socketio.run(app, debug=False, allow_unsafe_werkzeug=True, port=5001, log
